@@ -729,3 +729,75 @@ msgctxt "#30634"
 msgid "No browser available on this device: scan the QR code with your phone."
 msgstr ""
 
+msgctxt "#30640"
+msgid "Audio and subtitles"
+msgstr ""
+
+msgctxt "#30641"
+msgid "Preferred audio language"
+msgstr ""
+
+msgctxt "#30642"
+msgid "Subtitles"
+msgstr ""
+
+msgctxt "#30643"
+msgid "Subtitle language"
+msgstr ""
+
+msgctxt "#30645"
+msgid "Kodi default"
+msgstr ""
+
+msgctxt "#30646"
+msgid "Off"
+msgstr ""
+
+msgctxt "#30647"
+msgid "Always"
+msgstr ""
+
+msgctxt "#30648"
+msgid "Only when the audio is in another language"
+msgstr ""
+
+msgctxt "#30649"
+msgid "Forced only (signs, foreign dialogue)"
+msgstr ""
+
+msgctxt "#30651"
+msgid "French"
+msgstr ""
+
+msgctxt "#30652"
+msgid "English"
+msgstr ""
+
+msgctxt "#30653"
+msgid "Dutch"
+msgstr ""
+
+msgctxt "#30654"
+msgid "German"
+msgstr ""
+
+msgctxt "#30655"
+msgid "Spanish"
+msgstr ""
+
+msgctxt "#30656"
+msgid "Italian"
+msgstr ""
+
+msgctxt "#30657"
+msgid "Arabic"
+msgstr ""
+
+msgctxt "#30658"
+msgid "Portuguese"
+msgstr ""
+
+msgctxt "#30659"
+msgid "Turkish"
+msgstr ""
+

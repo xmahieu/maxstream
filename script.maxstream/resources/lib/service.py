@@ -6,7 +6,7 @@ import time
 
 import xbmc
 
-from . import common, net, pvr, storage
+from . import common, languages, net, pvr, storage
 from .stream_proxy import Relay
 from .common import get_bool, log, log_error, home_prop, read_json
 from .provider import get_provider
@@ -38,6 +38,11 @@ class Player(xbmc.Player):
                 self.seekTime(float(pending['seek']))
             except RuntimeError:
                 pass
+        try:
+            xbmc.sleep(500)  # let Kodi list every audio / subtitle stream first
+            languages.apply()
+        except Exception as err:  # pylint: disable=broad-except
+            log_error('language preferences: %r' % err)
 
     def poll(self):
         if self.current and self.isPlayingVideo():

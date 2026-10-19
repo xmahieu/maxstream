@@ -401,6 +401,46 @@ li = playback.build(storage.active_playlist(), base.SESSION.prov, 'movie', {'id'
 check(li.getPath().startswith(BASE_URL), 'relay can be switched off')
 relay.stop()
 
+# ---------------------------------------------------------------- audio / subtitle languages
+import copy  # noqa: E402
+from resources.lib import languages  # noqa: E402
+FILM = {'audiostreams': [{'index': 0, 'language': 'eng', 'name': 'English 5.1'},
+                         {'index': 1, 'language': '', 'name': 'VFF AC3'},
+                         {'index': 2, 'language': 'fre', 'name': 'Commentaire'}],
+        'subtitles': [{'index': 0, 'language': 'fre', 'name': 'Forcés', 'isforced': True},
+                      {'index': 1, 'language': 'fre', 'name': 'Français'},
+                      {'index': 2, 'language': 'eng', 'name': 'English SDH'}]}
+
+
+def lang_run(audio, mode, sub_lang=1):
+    xbmc.STREAMS.clear()
+    xbmc.STREAMS.update(copy.deepcopy(FILM))
+    xbmc.STREAMS['currentaudiostream'] = xbmc.STREAMS['audiostreams'][0]
+    xbmcaddon.SETTINGS.update({'audio_language': str(audio), 'subtitle_mode': str(mode), 'subtitle_language': str(sub_lang)})
+    del xbmc.RPC[:]
+    languages.apply()
+    calls = [json.loads(q) for q in xbmc.RPC]
+    return ([c['params'] for c in calls if c['method'] == 'Player.SetAudioStream'],
+            [c['params'] for c in calls if c['method'] == 'Player.SetSubtitle'])
+
+
+aud, sub = lang_run(0, 0)
+check(not aud and not sub, 'language: Kodi defaults leave streams alone')
+aud, sub = lang_run(1, 1)
+check(aud == [{'playerid': 1, 'stream': 1}] and sub == [{'playerid': 1, 'subtitle': 'off'}],
+      'language: French audio found by the VFF tag, commentary skipped, subtitles off')
+aud, sub = lang_run(2, 2, 1)
+check(not aud and sub == [{'playerid': 1, 'subtitle': 0, 'enable': True}], 'language: English kept, French subtitles always')
+aud, sub = lang_run(2, 3, 1)
+check(sub == [{'playerid': 1, 'subtitle': 1, 'enable': True}], 'language: full subtitles when the audio is foreign')
+aud, sub = lang_run(1, 3, 1)
+check(sub == [{'playerid': 1, 'subtitle': 'off'}], 'language: no subtitles when the audio is already French')
+aud, sub = lang_run(1, 4, 1)
+check(sub == [{'playerid': 1, 'subtitle': 0, 'enable': True}], 'language: forced subtitles only')
+aud, sub = lang_run(4, 4, 4)
+check(not aud and sub == [{'playerid': 1, 'subtitle': 'off'}], 'language: missing language changes nothing, no forced track -> off')
+xbmc.STREAMS.clear()
+
 print('ALL %d CHECKS PASSED' % OK[0])
 errors = [m for lvl, m in xbmc.LOG if lvl >= 3]
 print('kodi errors logged:', errors)

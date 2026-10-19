@@ -24,7 +24,14 @@ def executeJSONRPC(q):
             return json.dumps({'error': {'code': -32602}})
         GUI_SETTINGS[p['setting']] = p['value']
         return json.dumps({'result': True})
+    if req['method'] == 'Player.GetActivePlayers':
+        return json.dumps({'result': [{'playerid': 1, 'type': 'video'}] if STREAMS else []})
+    if req['method'] == 'Player.GetProperties':
+        return json.dumps({'result': STREAMS})
+    if req['method'] == 'Player.SetAudioStream':
+        STREAMS['currentaudiostream'] = STREAMS['audiostreams'][p['stream']]
     return json.dumps({'result': 'OK'})
+STREAMS = {}
 def getCondVisibility(cond):
     import re
     m = re.match(r'System.HasAddon\((.*)\)', cond)

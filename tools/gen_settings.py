@@ -82,7 +82,11 @@ XML = ('<?xml version="1.0" encoding="utf-8" standalone="yes"?>'
                   group('5', 30215,
                         text('user_agent', 30212, UA),
                         boolean('verify_ssl', 30213, True),
-                        slider('timeout', 30214, 20, 5, 120, 5)))
+                        slider('timeout', 30214, 20, 5, 120, 5)),
+                  group('lang', 30640,
+                        spinner('audio_language', 30641, 0, [(0, 30645)] + [(i, 30650 + i) for i in range(1, 10)]),
+                        spinner('subtitle_mode', 30642, 0, [(0, 30645), (1, 30646), (2, 30647), (3, 30648), (4, 30649)]),
+                        spinner('subtitle_language', 30643, 1, [(i, 30650 + i) for i in range(1, 10)])))
        + category('epg', 30300,
                   group('6', 30300,
                         boolean('epg_enabled', 30301, True),
