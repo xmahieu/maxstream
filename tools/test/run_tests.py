@@ -217,7 +217,7 @@ grid.selectItem([i['name'] for i in sw.view].index('The Show'))
 sw.onClick(vod.GRID)
 ds = last(detail.DetailWindow)
 check(ds.getProperty('mode') == 'series' and ds.getControl(detail.SEASONS).labels() == ['Season 1', 'Season 2'], 'seasons')
-check(ds.getControl(detail.EPISODES).labels() == ['E01  The Show S01E01', 'E02  The Show S01E02'], 'episodes')
+check(ds.getControl(detail.EPISODES).labels() == ['Episode 1', 'Episode 2'] and ds.getControl(detail.EPISODES).items[1].getProperty('epnum') == '02', 'episodes %r' % ds.getControl(detail.EPISODES).labels())
 check(ds.getProperty('btn_play') == 'Play S01E01', 'play first ep %r' % ds.getProperty('btn_play'))
 ds.onClick(detail.BTN_PLAY)
 check(played()[0].startswith(BASE_URL + '/series/u/p/4000.mkv'), 'episode url')
@@ -226,10 +226,15 @@ player.pos, player.total = 600, 2700
 player.onPlayBackStopped()
 ds.doModal()
 check(ds.getProperty('btn_play') == 'Resume S01E01', 'resume ep label %r' % ds.getProperty('btn_play'))
-ds.getControl(detail.SEASONS).selectItem(1)
+ds.getControl(detail.SEASONS).selectItem(1)   # mouse click on the second season tab: no move action
+ds.onClick(detail.SEASONS)
+check(ds.getControl(detail.EPISODES).labels() == ['Episode 1'] and ds.getFocusId() == detail.EPISODES, 'season click shows its episodes')
+ds.getControl(detail.SEASONS).selectItem(0)
 ds.setFocusId(detail.SEASONS)
+act(ds, 1)
+check(len(ds.getControl(detail.EPISODES).labels()) == 2, 'season switch with the remote')
+ds.getControl(detail.SEASONS).selectItem(1)
 act(ds, 2)
-check(ds.getControl(detail.EPISODES).labels() == ['E01  The Show S02E01'], 'season switch')
 ds.getControl(detail.EPISODES).selectItem(0)
 ds.onClick(detail.EPISODES)
 check(played()[0].startswith(BASE_URL + '/series/u/p/4010.mp4'), 'episode from list')
@@ -349,6 +354,11 @@ check(xbmcaddon.Addon().getSetting('act_donate') == '' and 'paypal.me/MaxStreamK
     ADDON, 'resources/skins/Default/1080i/script-maxstream-donate.xml'), encoding='utf-8').read(), 'donate link shown')
 act(h, 10)
 check(h.closed, 'home closes on back')
+
+# ---------------------------------------------------------------- episode titles
+check(base.episode_title({'title': 'The Show - S01E02 - Le retour', 'show': 'The Show', 'episode': 2}) == 'Le retour', 'title clean 1')
+check(base.episode_title({'title': 'FR - Big Series S03 E10', 'show': 'Big Series', 'episode': 10}) == 'FR - Big Series', 'title clean 2')
+check(base.episode_title({'title': '', 'show': 'X', 'episode': 4}) == 'Episode 4', 'title fallback')
 
 # ---------------------------------------------------------------- catch-up url templates
 st, en = 1700000000, 1700003600

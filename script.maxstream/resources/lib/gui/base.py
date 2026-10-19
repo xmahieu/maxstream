@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """Shared pieces of the graphical interface: session, window factory, item builders."""
+import re
 import threading
 import time
 
@@ -7,7 +8,7 @@ import xbmc
 import xbmcgui
 
 from .. import net, storage, ui
-from ..common import ADDON_PATH, L, fmt_duration, fmt_time, log_error, notify
+from ..common import ADDON_PATH, L, fmt_duration, fmt_time, fold, log_error, notify
 from ..provider import get_provider
 
 ACTION_LEFT, ACTION_RIGHT, ACTION_UP, ACTION_DOWN = 1, 2, 3, 4
@@ -116,9 +117,23 @@ def poster_item(kind, item, resume_state=None, is_new=False):
     return li
 
 
+EP_CODE_RE = re.compile(r'\b[Ss]\d{1,2}\s*[Ee]\d{1,4}\b|\b\d{1,2}x\d{1,3}\b')
+
+
+def episode_title(ep):
+    """'The Show - S01E02 - The Title' -> 'The Title' ; nothing left -> 'Episode 2'."""
+    title = ep.get('title') or ''
+    show = ep.get('show') or ''
+    if show and fold(title).startswith(fold(show)):
+        title = title[len(show):]
+    title = EP_CODE_RE.sub(' ', title)
+    title = re.sub(r'^[\s\-|:._]+|[\s\-|:._]+$', '', re.sub(r'\s{2,}', ' ', title))
+    return title or (L(30540) % (ep.get('episode') or 0))
+
+
 def episode_item(ep, resume_state=None):
-    label = 'E%02d  %s' % (ep.get('episode') or 0, ep.get('title') or '')
-    li = xbmcgui.ListItem(label=label, offscreen=True)
+    li = xbmcgui.ListItem(label=episode_title(ep), offscreen=True)
+    li.setProperty('epnum', '%02d' % (ep.get('episode') or 0))
     if ep.get('icon'):
         li.setArt({'thumb': ep['icon'], 'icon': ep['icon']})
     if resume_state and resume_state.get('pos'):

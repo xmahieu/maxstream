@@ -375,8 +375,13 @@ def detail():
     c.append(listc(400, 56, 740, 1808, 56, (212, 56, season), (212, 56, season_f), orientation='horizontal',
                    cond='String.IsEqual(Window.Property(mode),series)', up=301, down=510))
     episode = [img(0, 0, 288, 162, 'ms_r20.png', CARD_F, 22),
-               img(124, 61, 40, 40, 'ic_play.png', MUTED, cond='String.IsEmpty(ListItem.Art(thumb))'),
+               lbl(0, 30, 288, 70, '[B]E$INFO[ListItem.Property(epnum)][/B]', 'font45', 'FF55657F', align='center',
+                   cond='String.IsEmpty(ListItem.Art(thumb))'),
+               img(124, 104, 40, 40, 'ic_play.png', 'FF55657F', cond='String.IsEmpty(ListItem.Art(thumb))'),
                img(0, 0, 288, 162, '$INFO[ListItem.Art(thumb)]', aspect='scale', diffuse='ms_mask_thumb.png', background=True),
+               img(8, 8, 66, 30, 'ms_r4.png', 'C805080F', 5, cond='!String.IsEmpty(ListItem.Art(thumb))'),
+               lbl(8, 8, 66, 30, '[B]E$INFO[ListItem.Property(epnum)][/B]', 'font10', TEXT, align='center',
+                   cond='!String.IsEmpty(ListItem.Art(thumb))'),
                progress(0, 156, 288, 6, info='ListItem.PercentPlayed', cond='Integer.IsGreater(ListItem.PercentPlayed,0)'),
                lbl(0, 168, 288, 34, '$INFO[ListItem.Label]', 'font10')]
     c.append(listc(510, 56, 816, 1808, 210, (312, 210, episode),

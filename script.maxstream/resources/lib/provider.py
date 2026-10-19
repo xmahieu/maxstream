@@ -249,7 +249,7 @@ class XtreamProvider(BaseProvider):
                 snum = safe_int(ep.get('season'), safe_int(key))
                 episodes.setdefault(snum, []).append({
                     'id': str(ep.get('id')), 'title': ep.get('title') or '', 'season': snum,
-                    'episode': safe_int(ep.get('episode_num')), 'icon': ep_info.get('movie_image') or info.get('cover') or '',
+                    'episode': safe_int(ep.get('episode_num')), 'icon': ep_info.get('movie_image') or '',
                     'plot': ep_info.get('plot') or '', 'duration': safe_int(ep_info.get('duration_secs')),
                     'rating': safe_float(ep_info.get('rating')), 'ext': ep.get('container_extension') or 'mp4',
                     'show': show, 'sid': str(sid)})

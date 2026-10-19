@@ -200,11 +200,13 @@ class DetailWindow(xbmcgui.WindowXML):
         if action.getId() in BACK_ACTIONS:
             self.close()
         elif action.getId() in MOVE_ACTIONS and self.getFocusId() == SEASONS:
-            index = self.getControl(SEASONS).getSelectedPosition()
-            if index != self.season_index:
-                self.season_index = index
-                self._season_chosen = True
-                self.render_episodes(-1)
+            self.select_season(self.getControl(SEASONS).getSelectedPosition())
+
+    def select_season(self, index):
+        if 0 <= index < len(self.seasons) and index != self.season_index:
+            self.season_index = index
+            self._season_chosen = True
+            self.render_episodes(-1)
 
     def onClick(self, control_id):  # pylint: disable=invalid-name
         if control_id == BACK:
@@ -222,7 +224,9 @@ class DetailWindow(xbmcgui.WindowXML):
         elif control_id == BTN_FAV:
             self.toggle_fav()
         elif control_id == SEASONS:
-            self.setFocusId(EPISODES)
+            self.select_season(self.getControl(SEASONS).getSelectedPosition())
+            if self.season_eps():
+                self.setFocusId(EPISODES)
         elif control_id == EPISODES:
             eps = self.season_eps()
             pos = self.getControl(EPISODES).getSelectedPosition()

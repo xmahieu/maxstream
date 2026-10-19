@@ -488,12 +488,24 @@
                     <height>162</height>
                     <texture border="22" colordiffuse="FF1D2A44">ms_r20.png</texture>
                 </control>
+                <control type="label">
+                    <left>0</left>
+                    <top>30</top>
+                    <width>288</width>
+                    <height>70</height>
+                    <font>font45</font>
+                    <textcolor>FF55657F</textcolor>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <label>[B]E$INFO[ListItem.Property(epnum)][/B]</label>
+                    <visible>String.IsEmpty(ListItem.Art(thumb))</visible>
+                </control>
                 <control type="image">
                     <left>124</left>
-                    <top>61</top>
+                    <top>104</top>
                     <width>40</width>
                     <height>40</height>
-                    <texture colordiffuse="FFA9B8D0">ic_play.png</texture>
+                    <texture colordiffuse="FF55657F">ic_play.png</texture>
                     <visible>String.IsEmpty(ListItem.Art(thumb))</visible>
                 </control>
                 <control type="image">
@@ -503,6 +515,26 @@
                     <height>162</height>
                     <texture diffuse="ms_mask_thumb.png" background="true">$INFO[ListItem.Art(thumb)]</texture>
                     <aspectratio>scale</aspectratio>
+                </control>
+                <control type="image">
+                    <left>8</left>
+                    <top>8</top>
+                    <width>66</width>
+                    <height>30</height>
+                    <texture border="5" colordiffuse="C805080F">ms_r4.png</texture>
+                    <visible>!String.IsEmpty(ListItem.Art(thumb))</visible>
+                </control>
+                <control type="label">
+                    <left>8</left>
+                    <top>8</top>
+                    <width>66</width>
+                    <height>30</height>
+                    <font>font10</font>
+                    <textcolor>FFEAF1FB</textcolor>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <label>[B]E$INFO[ListItem.Property(epnum)][/B]</label>
+                    <visible>!String.IsEmpty(ListItem.Art(thumb))</visible>
                 </control>
                 <control type="progress">
                     <left>0</left>
@@ -534,12 +566,26 @@
                     <height>162</height>
                     <texture border="22" colordiffuse="FF1D2A44">ms_r20.png</texture>
                 </control>
+                <control type="label">
+                    <left>0</left>
+                    <top>30</top>
+                    <width>288</width>
+                    <height>70</height>
+                    <font>font45</font>
+                    <textcolor>FF55657F</textcolor>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <label>[B]E$INFO[ListItem.Property(epnum)][/B]</label>
+                    <scroll>true</scroll>
+                    <scrollspeed>50</scrollspeed>
+                    <visible>String.IsEmpty(ListItem.Art(thumb))</visible>
+                </control>
                 <control type="image">
                     <left>124</left>
-                    <top>61</top>
+                    <top>104</top>
                     <width>40</width>
                     <height>40</height>
-                    <texture colordiffuse="FFA9B8D0">ic_play.png</texture>
+                    <texture colordiffuse="FF55657F">ic_play.png</texture>
                     <visible>String.IsEmpty(ListItem.Art(thumb))</visible>
                 </control>
                 <control type="image">
@@ -549,6 +595,28 @@
                     <height>162</height>
                     <texture diffuse="ms_mask_thumb.png" background="true">$INFO[ListItem.Art(thumb)]</texture>
                     <aspectratio>scale</aspectratio>
+                </control>
+                <control type="image">
+                    <left>8</left>
+                    <top>8</top>
+                    <width>66</width>
+                    <height>30</height>
+                    <texture border="5" colordiffuse="C805080F">ms_r4.png</texture>
+                    <visible>!String.IsEmpty(ListItem.Art(thumb))</visible>
+                </control>
+                <control type="label">
+                    <left>8</left>
+                    <top>8</top>
+                    <width>66</width>
+                    <height>30</height>
+                    <font>font10</font>
+                    <textcolor>FFEAF1FB</textcolor>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <label>[B]E$INFO[ListItem.Property(epnum)][/B]</label>
+                    <scroll>true</scroll>
+                    <scrollspeed>50</scrollspeed>
+                    <visible>!String.IsEmpty(ListItem.Art(thumb))</visible>
                 </control>
                 <control type="progress">
                     <left>0</left>

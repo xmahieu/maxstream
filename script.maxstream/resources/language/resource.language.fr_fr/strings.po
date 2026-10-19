@@ -645,6 +645,10 @@ msgctxt "#30539"
 msgid "Search"
 msgstr "Recherche"
 
+msgctxt "#30540"
+msgid "Episode %s"
+msgstr "Épisode %s"
+
 msgctxt "#30600"
 msgid "Kodi TV menu"
 msgstr "Menu TV de Kodi"

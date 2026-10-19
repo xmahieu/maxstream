@@ -167,6 +167,7 @@ S = {
     30537: ('Account', 'Compte'),
     30538: ('Playlists', 'Listes'),
     30539: ('Search', 'Recherche'),
+    30540: ('Episode %s', 'Épisode %s'),
     30610: ('Director', 'Réalisation'),
     30630: ('Support MaxStream (5 € donation)', 'Soutenir MaxStream (don de 5 €)'),
     30631: ('MaxStream is free. If you enjoy it, you can offer €5 to its developer: scan the code with your phone, or open paypal.me/MaxStreamKodi/5EUR. Thank you!',
