@@ -21,6 +21,7 @@ from .common import DEFAULT_UA, log, log_error
 
 STALL_TIMEOUT = 5        # seconds without data before reconnecting (also the connect timeout)
 GIVE_UP_AFTER = 180      # seconds without any data before giving up
+MAX_RECONNECTS = 6       # per minute: more looks like flooding and gets the account / IP banned
 CHUNK = 256 * 1024
 PASS_HEADERS = ('Content-Type', 'Content-Length', 'Content-Range', 'Accept-Ranges', 'Last-Modified', 'ETag')
 
@@ -128,6 +129,7 @@ class RelayHandler(BaseHTTPRequestHandler):
 
     def _pump(self, resp, url, headers, kind, offset, expected_end, end, seekable):
         reconnects = 0
+        recent = []
         last_data = time.time()
         live = kind == 'live'
         resumable = seekable and kind != 'live'
@@ -165,6 +167,10 @@ class RelayHandler(BaseHTTPRequestHandler):
                         pass
                     resp = None
                 reconnects += 1
+                recent = [t for t in recent if time.time() - t < 60] + [time.time()]
+                if len(recent) > MAX_RECONNECTS:
+                    log_error('relay: %d reconnections in a minute, stopping to protect the account' % len(recent))
+                    return
                 log('relay: %s at byte %d, reconnecting (%d)' % (reason, offset, reconnects), 1)
                 try:
                     if live:
@@ -176,6 +182,11 @@ class RelayHandler(BaseHTTPRequestHandler):
                             resp = None
                             log_error('relay: server refused to resume, stopping')
                             return
+                except urllib.error.HTTPError as err:
+                    # the provider refuses (401/403 = connection limit or ban, 404 = gone):
+                    # insisting only makes it worse
+                    log_error('relay: provider refused the reconnection (HTTP %s), stopping' % err.code)
+                    return
                 except (urllib.error.URLError, OSError, ValueError) as err:
                     log_error('relay: reconnect failed: %s' % err)
                     resp = None

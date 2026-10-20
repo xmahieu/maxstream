@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="script.maxstream" name="MaxStream IPTV" version="2.3.1" provider-name="MaxStreamKodi">
+<addon id="script.maxstream" name="MaxStream IPTV" version="2.3.2" provider-name="MaxStreamKodi">
     <requires>
         <import addon="xbmc.python" version="3.0.1"/>
     </requires>
@@ -18,7 +18,7 @@
         <license>GPL-3.0-or-later</license>
         <website>https://maxstreamkodi-cyber.github.io/maxstream/</website>
         <source>https://github.com/maxstreamkodi-cyber/maxstream</source>
-        <news>v2.3.1 - Fix: Kodi could freeze when leaving Live TV while the preview was playing; the stream relay stops as soon as a channel is left. v2.3.0 - Preferred audio language and subtitles (off, always, only for foreign audio, forced only) in Settings > Playback. v2.2.2 - Series: clicking a season shows its episodes, cleaner episode cards and titles. v2.2.1 - New home: maxstreamkodi-cyber.github.io/maxstream. v2.2.0 - Support button (5 € donation), published in the MaxStream repository. v2.1.0 - Stream relay: reconnects within 5 s when the provider stalls and resumes at the exact position; TV guide never refreshed during playback. v2.0.2 - Long titles scroll when selected. v2.0.1 - Kodi cache optimisation for streaming (fixes short freezes), early end of stream no longer marks videos as watched. v2.0.0 - Graphical interface (home, live TV with preview, movies, series, guide) and Kodi TV menu synchronisation</news>
+        <news>v2.3.2 - The stream relay never insists when the provider refuses (401/403) and limits reconnections, so the account is not blocked for flooding. v2.3.1 - Fix: Kodi could freeze when leaving Live TV while the preview was playing; the stream relay stops as soon as a channel is left. v2.3.0 - Preferred audio language and subtitles (off, always, only for foreign audio, forced only) in Settings > Playback. v2.2.2 - Series: clicking a season shows its episodes, cleaner episode cards and titles. v2.2.1 - New home: maxstreamkodi-cyber.github.io/maxstream. v2.2.0 - Support button (5 € donation), published in the MaxStream repository. v2.1.0 - Stream relay: reconnects within 5 s when the provider stalls and resumes at the exact position; TV guide never refreshed during playback. v2.0.2 - Long titles scroll when selected. v2.0.1 - Kodi cache optimisation for streaming (fixes short freezes), early end of stream no longer marks videos as watched. v2.0.0 - Graphical interface (home, live TV with preview, movies, series, guide) and Kodi TV menu synchronisation</news>
         <assets>
             <icon>icon.png</icon>
             <fanart>fanart.jpg</fanart>
