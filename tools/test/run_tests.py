@@ -393,6 +393,11 @@ while got < 700000:
     got += len(live_resp.read(65536))
 live_resp.close()
 check(fake_server.STATE['live_conn'] >= 4, 'live channel re-opened when the server closes it')
+time.sleep(1.5)
+conns = fake_server.STATE['live_conn']
+time.sleep(3)
+check(fake_server.STATE['live_conn'] == conns, 'relay stops reconnecting once Kodi has left the channel (%d -> %d)'
+      % (conns, fake_server.STATE['live_conn']))
 xbmcgui._PROPS['script.maxstream.relay_port'] = str(port)
 li = playback.build(storage.active_playlist(), base.SESSION.prov, 'movie', {'id': '201', 'name': 'x', 'ext': 'mkv'}, seek=0)
 check(li.getPath().startswith('http://127.0.0.1:%d/stream?k=vod&u=' % port) and li.mime == 'video/x-matroska', 'movies go through the relay')

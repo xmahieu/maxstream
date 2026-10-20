@@ -7,7 +7,10 @@ PLAYED = []
 def log(msg, level=0):
     LOG.append((level, msg))
     if level >= 3: print('KODI-ERR', msg)
-def executebuiltin(cmd, wait=False): BUILTINS.append(cmd)
+def executebuiltin(cmd, wait=False):
+    BUILTINS.append(cmd)
+    if cmd == 'PlayerControl(Stop)':
+        Player.playing = False
 GUI_SETTINGS = {'filecache.memorysize': 20, 'filecache.readfactor': 400, 'filecache.buffermode': 4}
 ALLOWED = {'filecache.readfactor': (100, 150, 200, 400, 800, 1000, 2000)}
 INFO = {'System.Memory(total)': '32640MB'}

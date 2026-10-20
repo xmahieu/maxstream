@@ -8,6 +8,7 @@ drops the connection, it reconnects at once and resumes at the exact byte
 (HTTP Range) for movies / episodes, or re-opens the channel for live TV. Kodi
 keeps playing from its own cache meanwhile, so the hiccup is invisible."""
 import re
+import select
 import socket
 import threading
 import time
@@ -49,6 +50,16 @@ class RelayHandler(BaseHTTPRequestHandler):
 
     def log_message(self, fmt, *args):  # quiet: Kodi log only gets our own lines
         pass
+
+    def client_gone(self):
+        """True when Kodi has closed its side (stop, channel change)."""
+        try:
+            readable, _, _ = select.select([self.connection], [], [], 0)
+            if readable:
+                return self.connection.recv(1, socket.MSG_PEEK) == b''
+        except (OSError, ValueError):
+            return True
+        return False
 
     # ------------------------------------------------------------ upstream
     def _open(self, url, headers, start=None, end=None, method='GET'):
@@ -142,6 +153,8 @@ class RelayHandler(BaseHTTPRequestHandler):
                     return  # real end of file
                 if not (resumable or live):
                     return  # cannot resume this stream without restarting it
+                if self.client_gone():
+                    return  # Kodi stopped or switched channel: never reconnect for nobody
                 if time.time() - last_data > GIVE_UP_AFTER:
                     log_error('relay: provider silent for %ds, giving up' % GIVE_UP_AFTER)
                     return
@@ -166,7 +179,11 @@ class RelayHandler(BaseHTTPRequestHandler):
                 except (urllib.error.URLError, OSError, ValueError) as err:
                     log_error('relay: reconnect failed: %s' % err)
                     resp = None
-                    time.sleep(min(5, 0.5 * reconnects))
+                    pause = time.time() + min(5, 0.5 * reconnects)
+                    while time.time() < pause:
+                        if self.client_gone():
+                            return
+                        time.sleep(0.2)
         except (BrokenPipeError, ConnectionResetError, ConnectionAbortedError):
             pass  # Kodi closed the connection (stop, seek, next item)
         finally:

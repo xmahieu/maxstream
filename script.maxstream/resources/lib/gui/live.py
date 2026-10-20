@@ -8,6 +8,7 @@ import xbmc
 import xbmcgui
 
 from .. import actions, playback, storage, ui
+from ..playback import stop_playback
 from ..common import L, fmt_time, get_bool
 from .base import (BACK_ACTIONS, CONTEXT_ACTIONS, MOVE_ACTIONS, SESSION, Busy, adult_filter, channel_item, create,
                    fill, hidden_ids)
@@ -50,7 +51,7 @@ class LiveWindow(xbmcgui.WindowXML):
         if self._timer:
             self._timer.cancel()
         if self.preview_id and self.player.isPlaying():
-            self.player.stop()
+            stop_playback(self.player)
         self.close()
 
     # ------------------------------------------------------------ categories

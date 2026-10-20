@@ -111,3 +111,19 @@ def build_catchup(playlist, prov, channel, start, stop, server_start='', title='
 
 def start(li, windowed=False):
     xbmc.Player().play(li.getPath(), li, windowed)
+
+
+def stop_playback(player=None, wait=4.0):
+    """Stop the video without blocking Kodi's GUI thread.
+
+    xbmc.Player().stop() waits for the GUI thread; calling it while a window
+    with a video preview closes can freeze Kodi. PlayerControl(Stop) is queued
+    instead and we wait (bounded) until playback has really ended."""
+    player = player or xbmc.Player()
+    xbmc.executebuiltin('PlayerControl(Stop)')
+    monitor = xbmc.Monitor()
+    deadline = wait
+    while deadline > 0 and player.isPlaying():
+        if monitor.waitForAbort(0.1):
+            break
+        deadline -= 0.1
