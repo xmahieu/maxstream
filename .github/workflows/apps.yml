@@ -45,7 +45,7 @@ jobs:
         working-directory: app
         run: |
           set +e
-          flutter build apk --release > build.txt 2>&1
+          flutter build apk --release --dart-define=LICENCE_URL=${{ vars.LICENCE_URL }} > build.txt 2>&1
           st=$?
           cat build.txt
           if [ $st -ne 0 ]; then
@@ -80,7 +80,7 @@ jobs:
         working-directory: app
         shell: pwsh
         run: |
-          flutter build windows --release *> build.txt
+          flutter build windows --release --dart-define=LICENCE_URL=${{ vars.LICENCE_URL }} *> build.txt
           $st = $LASTEXITCODE
           Get-Content build.txt
           if ($st -ne 0) {

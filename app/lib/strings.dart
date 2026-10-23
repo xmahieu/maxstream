@@ -107,6 +107,18 @@ const _enTexts = <String, String>{
   'search_hint': 'Search…',
   'catchup_days': 'Catch-up: %s days',
   'no_catchup': 'This channel has no catch-up',
+  'lic_title': 'Licence',
+  'lic_trial_left': 'Free trial: %s days left',
+  'lic_expired': 'Your free week is over',
+  'lic_paid': 'Lifetime licence active',
+  'lic_offer': 'MaxStream is free for 7 days on each device. Unlock it for life on this device for a single payment of €%s — no subscription.',
+  'lic_device': 'Device code',
+  'lic_pay': 'Unlock for €%s with PayPal',
+  'lic_check': 'I have paid',
+  'lic_not_yet': 'Payment not received yet: it can take a few seconds.',
+  'lic_scan': 'Scan with your phone to pay',
+  'lic_help': 'The licence is linked to this device code. Questions: maxstreamkodi@gmail.com',
+  'lic_banner': 'Trial: %s d left',
 };
 
 const _frTexts = <String, String>{
@@ -211,6 +223,18 @@ const _frTexts = <String, String>{
   'search_hint': 'Rechercher…',
   'catchup_days': 'Replay : %s jours',
   'no_catchup': "Cette chaîne n'a pas de replay",
+  'lic_title': 'Licence',
+  'lic_trial_left': 'Essai gratuit : encore %s jours',
+  'lic_expired': 'Votre semaine gratuite est terminée',
+  'lic_paid': 'Licence à vie active',
+  'lic_offer': "MaxStream est gratuit pendant 7 jours sur chaque appareil. Débloquez-le à vie sur cet appareil pour un paiement unique de %s € — sans abonnement.",
+  'lic_device': "Code de l'appareil",
+  'lic_pay': 'Débloquer pour %s € avec PayPal',
+  'lic_check': "J'ai payé",
+  'lic_not_yet': "Paiement pas encore reçu : cela peut prendre quelques secondes.",
+  'lic_scan': 'Scannez avec votre téléphone pour payer',
+  'lic_help': "La licence est liée à ce code d'appareil. Questions : maxstreamkodi@gmail.com",
+  'lic_banner': 'Essai : %s j',
 };
 
 String tf(String key, Object arg) => t(key).replaceFirst('%s', '$arg');

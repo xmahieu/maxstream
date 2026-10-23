@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import '../licence.dart';
 import '../models.dart';
 import '../play.dart';
 import '../session.dart';
@@ -9,6 +10,7 @@ import '../store.dart';
 import '../strings.dart';
 import '../theme.dart';
 import '../widgets.dart';
+import 'licence_screen.dart';
 import 'live.dart';
 import 'playlists.dart';
 import 'search.dart';
@@ -30,6 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     Session.I.addListener(_reload);
+    Licence.I.addListener(_licenceChanged);
     _tick();
     _clock = Timer.periodic(const Duration(seconds: 20), (_) => _tick());
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -42,7 +45,12 @@ class _HomeScreenState extends State<HomeScreen> {
   void dispose() {
     _clock.cancel();
     Session.I.removeListener(_reload);
+    Licence.I.removeListener(_licenceChanged);
     super.dispose();
+  }
+
+  void _licenceChanged() {
+    if (mounted) setState(() {});
   }
 
   void _tick() {
@@ -100,7 +108,16 @@ class _HomeScreenState extends State<HomeScreen> {
                 if (pl != null && wide) Flexible(child: Text(pl.name, style: const TextStyle(color: C.muted), overflow: TextOverflow.ellipsis)),
                 const Spacer(),
                 if (wide) Text(_time, style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
-                IconBtn(Icons.star_rounded, () => _open(const DonateScreen()), color: C.star, tooltip: t('donate')),
+                if (Licence.I.enabled && Licence.I.status == LicenceStatus.trial)
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8),
+                    child: Btn(tf('lic_banner', Licence.I.daysLeft), () async {
+                      await Navigator.of(context).push(MaterialPageRoute(builder: (_) => const LicenceScreen(canClose: true)));
+                      if (mounted) setState(() {});
+                    }, icon: Icons.lock_clock),
+                  ),
+                if (!Licence.I.enabled)
+                  IconBtn(Icons.star_rounded, () => _open(const DonateScreen()), color: C.star, tooltip: t('donate')),
                 IconBtn(Icons.settings, () => _open(const SettingsScreen()), tooltip: t('settings')),
               ]),
               const SizedBox(height: 22),
