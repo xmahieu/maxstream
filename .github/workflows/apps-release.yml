@@ -1,0 +1,148 @@
+name: MaxStream apps (release)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Copy app and licence server from the development repository
+        run: |
+          git clone --depth 1 https://github.com/xmahieu/maxstream.git /tmp/dev
+          rm -rf app licence
+          cp -r /tmp/dev/app /tmp/dev/licence .
+          git config user.name "MaxStreamKodi"
+          git config user.email "344840609+maxstreamkodi-cyber@users.noreply.github.com"
+          git add app licence
+          git diff --cached --quiet || git commit -m "Sync app sources from development repository"
+          git push
+
+  android:
+    needs: sync
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-java@v4
+        with:
+          distribution: zulu
+          java-version: '17'
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Generate platform folder
+        working-directory: app
+        run: |
+          flutter --version
+          flutter create --platforms=android --org com.maxstreamkodi --project-name maxstream .
+          rm -rf test
+          python3 ci/prepare.py android
+        env:
+          ANDROID_KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_B64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+      - name: Analyze
+        working-directory: app
+        run: |
+          flutter pub get
+          if ! flutter analyze --no-fatal-infos --no-fatal-warnings > analyze.txt 2>&1; then
+            cat analyze.txt
+            grep -E "error •" analyze.txt | head -45 | while read -r l; do echo "::error::$l"; done
+            exit 1
+          fi
+      - name: Build APK
+        working-directory: app
+        run: |
+          set +e
+          flutter build apk --release --dart-define=LICENCE_URL=${{ vars.LICENCE_URL }} > build.txt 2>&1
+          st=$?
+          cat build.txt
+          if [ $st -ne 0 ]; then
+            grep -iE "error|exception|failed|what went wrong" build.txt | head -45 | while read -r l; do echo "::error::$l"; done
+            exit $st
+          fi
+          set -e
+          mkdir -p dist
+          cp build/app/outputs/flutter-apk/app-release.apk dist/MaxStream.apk
+        env:
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android
+          path: app/dist/MaxStream.apk
+
+  windows:
+    needs: sync
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Generate platform folder
+        working-directory: app
+        run: |
+          flutter create --platforms=windows --org com.maxstreamkodi --project-name maxstream .
+          Remove-Item -Recurse -Force test -ErrorAction SilentlyContinue
+          python ci/prepare.py windows
+      - name: Build
+        working-directory: app
+        shell: pwsh
+        run: |
+          flutter build windows --release --dart-define=LICENCE_URL=${{ vars.LICENCE_URL }} *> build.txt
+          $st = $LASTEXITCODE
+          Get-Content build.txt
+          if ($st -ne 0) {
+            Select-String -Path build.txt -Pattern 'error|exception|failed' | Select-Object -First 45 | ForEach-Object { Write-Output "::error::$($_.Line)" }
+            exit $st
+          }
+      - name: Installer and portable zip
+        working-directory: app
+        shell: pwsh
+        run: |
+          $version = (Select-String -Path pubspec.yaml -Pattern '^version: (\S+)').Matches[0].Groups[1].Value.Split('+')[0]
+          $env:APP_VERSION = $version
+          New-Item -ItemType Directory -Force dist | Out-Null
+          Compress-Archive -Path build\windows\x64\runner\Release\* -DestinationPath dist\MaxStream-Windows-portable.zip
+          if (-not (Get-Command iscc -ErrorAction SilentlyContinue)) { choco install innosetup -y --no-progress | Out-Null }
+          $iscc = (Get-Command iscc -ErrorAction SilentlyContinue).Source
+          if (-not $iscc) { $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" }
+          & $iscc ci\maxstream.iss
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows
+          path: app/dist/*
+
+  release:
+    needs: [android, windows]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSION=$(grep '^version:' app/pubspec.yaml | awk '{print $2}' | cut -d+ -f1)
+          TAG="app-v$VERSION"
+          ls -la dist
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" dist/* --clobber
+          else
+            gh release create "$TAG" dist/* --title "MaxStream $VERSION (Android, Android TV, Windows)" \
+              --notes "Application MaxStream autonome. Android / Android TV : MaxStream.apk. Windows : MaxStream-Setup.exe (installateur) ou MaxStream-Windows-portable.zip."
+          fi

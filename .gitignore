@@ -1,3 +1,7 @@
 __pycache__/
 *.pyc
 dist/
+
+# private keys and secrets (never published)
+_prive/
+*.jks
