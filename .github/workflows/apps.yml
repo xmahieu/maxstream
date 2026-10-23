@@ -27,6 +27,7 @@ jobs:
         run: |
           flutter --version
           flutter create --platforms=android --org com.maxstreamkodi --project-name maxstream .
+          rm -rf test
           python3 ci/prepare.py android
         env:
           ANDROID_KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_B64 }}
@@ -35,11 +36,23 @@ jobs:
         working-directory: app
         run: |
           flutter pub get
-          flutter analyze --no-fatal-infos --no-fatal-warnings
+          if ! flutter analyze --no-fatal-infos --no-fatal-warnings > analyze.txt 2>&1; then
+            cat analyze.txt
+            grep -E "error •" analyze.txt | head -45 | while read -r l; do echo "::error::$l"; done
+            exit 1
+          fi
       - name: Build APK
         working-directory: app
         run: |
-          flutter build apk --release
+          set +e
+          flutter build apk --release > build.txt 2>&1
+          st=$?
+          cat build.txt
+          if [ $st -ne 0 ]; then
+            grep -iE "error|exception|failed|what went wrong" build.txt | head -45 | while read -r l; do echo "::error::$l"; done
+            exit $st
+          fi
+          set -e
           mkdir -p dist
           cp build/app/outputs/flutter-apk/app-release.apk dist/MaxStream.apk
         env:
@@ -61,10 +74,19 @@ jobs:
         working-directory: app
         run: |
           flutter create --platforms=windows --org com.maxstreamkodi --project-name maxstream .
+          Remove-Item -Recurse -Force test -ErrorAction SilentlyContinue
           python ci/prepare.py windows
       - name: Build
         working-directory: app
-        run: flutter build windows --release
+        shell: pwsh
+        run: |
+          flutter build windows --release *> build.txt
+          $st = $LASTEXITCODE
+          Get-Content build.txt
+          if ($st -ne 0) {
+            Select-String -Path build.txt -Pattern 'error|exception|failed' | Select-Object -First 45 | ForEach-Object { Write-Output "::error::$($_.Line)" }
+            exit $st
+          }
       - name: Installer and portable zip
         working-directory: app
         shell: pwsh

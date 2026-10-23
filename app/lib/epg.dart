@@ -83,8 +83,8 @@ Map<String, List<Programme>> parseXmltv(String text) {
           curChannel = null;
           break;
         case 'programme':
-          if (curProgChannel != null && start != null && stop != null && stop! > from && start! < to) {
-            progs.putIfAbsent(curProgChannel, () => []).add(Programme(start!, stop!, title, desc: desc));
+          if (curProgChannel != null && start != null && stop != null && stop > from && start < to) {
+            progs.putIfAbsent(curProgChannel, () => []).add(Programme(start, stop, title, desc: desc));
           }
           curProgChannel = null;
           break;
