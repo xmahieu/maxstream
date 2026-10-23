@@ -260,8 +260,11 @@ class XtreamProvider extends Provider {
     final m = raw is Map ? Map<String, dynamic>.from(raw) : <String, dynamic>{};
     final info = m['info'] is Map ? Map<String, dynamic>.from(m['info'] as Map) : <String, dynamic>{};
     final show = toStr(info['name']).isEmpty ? series.name : toStr(info['name']);
-    var groups = m['episodes'];
-    if (groups is List) groups = {for (var i = 0; i < groups.length; i++) '${i + 1}': groups[i]};
+    dynamic groups = m['episodes'];
+    if (groups is List) {
+      final list = groups;
+      groups = <String, dynamic>{for (var i = 0; i < list.length; i++) '${i + 1}': list[i]};
+    }
     final seasons = <int, List<Episode>>{};
     if (groups is Map) {
       groups.forEach((key, eps) {
