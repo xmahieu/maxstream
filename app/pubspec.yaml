@@ -1,0 +1,27 @@
+name: maxstream
+description: MaxStream IPTV - TV en direct, films, séries et replay pour comptes Xtream Codes et listes M3U.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.3.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  media_kit: ^1.1.11
+  media_kit_video: ^1.2.5
+  media_kit_libs_video: ^1.0.5
+  http: ^1.2.1
+  shared_preferences: ^2.2.3
+  path_provider: ^2.1.3
+  url_launcher: ^6.2.6
+  xml: ^6.5.0
+
+dev_dependencies:
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/
