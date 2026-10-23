@@ -18,6 +18,12 @@ Future<void> main() async {
   runApp(const MaxStreamApp());
 }
 
+final navigatorKey = GlobalKey<NavigatorState>();
+
+class BackIntent extends Intent {
+  const BackIntent();
+}
+
 class MaxStreamApp extends StatelessWidget {
   const MaxStreamApp({super.key});
 
@@ -27,13 +33,24 @@ class MaxStreamApp extends StatelessWidget {
       // TV remotes: OK / centre button activates like Enter
       shortcuts: const {
         SingleActivator(LogicalKeyboardKey.select): ActivateIntent(),
+        SingleActivator(LogicalKeyboardKey.escape): BackIntent(),
+        SingleActivator(LogicalKeyboardKey.browserBack): BackIntent(),
       },
-      child: MaterialApp(
+      child: Actions(
+        actions: {
+          BackIntent: CallbackAction<BackIntent>(onInvoke: (_) {
+            navigatorKey.currentState?.maybePop();
+            return null;
+          }),
+        },
+        child: MaterialApp(
+        navigatorKey: navigatorKey,
         title: 'MaxStream',
         debugShowCheckedModeBanner: false,
         theme: buildTheme(),
         builder: (context, child) => LicenceGate(child: child ?? const SizedBox.shrink()),
         home: const HomeScreen(),
+        ),
       ),
     );
   }

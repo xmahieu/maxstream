@@ -110,7 +110,8 @@ class XtreamProvider extends Provider {
 
   Future<dynamic> api([String? action, Map<String, String> params = const {}]) {
     final q = {'username': pl.username, 'password': pl.password, if (action != null) 'action': action, ...params};
-    return fetchJson('$server/player_api.php?${Uri(queryParameters: q).query}');
+    // full catalogues can be tens of MB on slow IPTV servers
+    return fetchJson('$server/player_api.php?${Uri(queryParameters: q).query}', timeout: const Duration(seconds: 120));
   }
 
   Future<dynamic> _cached(String key, Future<dynamic> Function() load) async {

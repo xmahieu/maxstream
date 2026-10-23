@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:isolate';
 
 import 'package:http/http.dart' as http;
 
@@ -56,7 +57,8 @@ Future<dynamic> fetchJson(String url, {Duration timeout = const Duration(seconds
   final text = await fetchText(url, timeout: timeout);
   if (text.trim().isEmpty) return null;
   try {
-    return jsonDecode(text);
+    // big catalogues (tens of thousands of movies) are decoded off the UI thread
+    return text.length > 300000 ? await Isolate.run(() => jsonDecode(text)) : jsonDecode(text);
   } on FormatException {
     throw NetError('invalid answer from server');
   }
